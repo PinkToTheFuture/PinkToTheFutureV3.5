@@ -11,7 +11,7 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
 @Disabled
 @Autonomous(name = "Only shoot right start red", group = "shoot")
 
-public class  OnlyShootRightStartRed extends LinearOpMode implements ServoVariables{
+public class  OnlyShootRightStartRed extends LinearOpMode implements org.firstinspires.ftc.teamcode.ServoVariables {
     public void Forward(double omw, double pwr) throws InterruptedException{
         boolean loop = true;
         DcMotor LFdrive = hardwareMap.dcMotor.get("LFdrive");

@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.hardware.adafruit.AdafruitBNO055IMU;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.I2cAddr;
+
 import org.firstinspires.ftc.robotcore.external.navigation.Quaternion;
 
 import java.util.Locale;
@@ -26,6 +28,7 @@ public class bno055driver {
         parameters.pitchMode = BNO055IMU.PitchMode.WINDOWS;
         parameters.loggingEnabled = true;
         parameters.loggingTag = "IMU";
+        parameters.calibrationDataFile  = "BNO055IMUCalibration.json";
         imu.initialize(parameters);
     }
 
@@ -54,4 +57,5 @@ public class bno055driver {
         double[] angles = getAngles();
         return String.format(Locale.US, "Yaw: %.3f  Pitch: %.3f  Roll: %.3f", angles[0], angles[1], angles[2]);
     }
+
 }

@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
 @Disabled
 @Autonomous(name = "reboot shooter", group = "corner")
 
-public class OneTurnShoot extends LinearOpMode implements ServoVariables{
+public class OneTurnShoot extends LinearOpMode implements org.firstinspires.ftc.teamcode.ServoVariables {
 
 
 

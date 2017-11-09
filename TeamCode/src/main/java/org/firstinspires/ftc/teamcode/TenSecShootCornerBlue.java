@@ -12,7 +12,7 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
 @Disabled
 @Autonomous(name = "10 sec shoot corner blue", group = "corner")
 
-public class TenSecShootCornerBlue extends LinearOpMode implements ServoVariables{
+public class TenSecShootCornerBlue extends LinearOpMode implements org.firstinspires.ftc.teamcode.ServoVariables {
     public void Forward(double omw, double pwr) throws InterruptedException{
         boolean loop = true;
         DcMotor LFdrive = hardwareMap.dcMotor.get("LFdrive");

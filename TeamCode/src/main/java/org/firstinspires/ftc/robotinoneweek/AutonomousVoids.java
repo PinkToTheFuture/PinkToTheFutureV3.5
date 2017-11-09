@@ -1,20 +1,14 @@
 package org.firstinspires.ftc.robotinoneweek;
 
-import android.graphics.Color;
-
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.Servo;
-
-import org.firstinspires.ftc.teamcode.*;
 
 @Autonomous(name = "AutoVoids", group = "full")
 @Disabled
-class AutonomousVoids extends LinearOpMode implements ServoVariables{
+class AutonomousVoids extends LinearOpMode implements org.firstinspires.ftc.robotinoneweek.ServoVariables {
     RobotComponents robotcomponents = new RobotComponents();
 
     public void Jewels(String color){

@@ -16,6 +16,8 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.hardware.UltrasonicSensor;
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.robotcore.external.Func;
+
 @TeleOp(name = "BalanceSimpleTest", group = "TeleOp")
 public class BalanceSimpleTest extends LinearOpMode {
     //Motors
@@ -39,13 +41,6 @@ public class BalanceSimpleTest extends LinearOpMode {
         RFdrive.setDirection(DcMotorSimple.Direction.REVERSE);
 
         imu = new bno055driver("IMU", hardwareMap);
-
-        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
-        parameters.calibrationDataFile = "BNO055IMUCalibration.json";
-
-
-        imu.initialize(parameters);
 
         double Pv = 25;     //pitch value
         double Rv = 15;     //roll value
@@ -81,9 +76,12 @@ public class BalanceSimpleTest extends LinearOpMode {
             LBdrive.setPower(LBpower);
             RBdrive.setPower(RBpower);
 
+            
             telemetry.addLine("Pitch: " + (imu.getAngles()[1])); //pitch
             telemetry.addLine("Roll: " + (imu.getAngles()[2]));  //roll
             telemetry.update();
+
+
         }
     }
 

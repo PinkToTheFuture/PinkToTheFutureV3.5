@@ -5,17 +5,13 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.LegacyModule;
-import com.qualcomm.robotcore.hardware.LegacyModulePortDevice;
-import com.qualcomm.robotcore.hardware.LegacyModulePortDeviceImpl;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
-import com.qualcomm.robotcore.hardware.configuration.LegacyModuleControllerConfiguration;
 import com.qualcomm.robotcore.util.Range;
 
 @TeleOp(name="Full Robot", group="PinktotheFuture")
 
-public class FullRobotPTTF extends LinearOpMode implements ServoVariables{
+public class FullRobotPTTF extends LinearOpMode implements org.firstinspires.ftc.teamcode.ServoVariables {
 
     @Override
     public void runOpMode() throws InterruptedException {

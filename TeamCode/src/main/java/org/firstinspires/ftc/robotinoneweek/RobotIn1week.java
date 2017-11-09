@@ -1,19 +1,18 @@
 package org.firstinspires.ftc.robotinoneweek;
 
 
-import com.qualcomm.ftccommon.Restarter;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.robot.Robot;
 import com.qualcomm.robotcore.util.Range;
+
+import org.firstinspires.ftc.robotinoneweek.ServoVariables;
 
 
 @TeleOp(name="RobotInOneWeek", group="FTC")
-public class RobotIn1week extends LinearOpMode implements ServoVariables{
+public class RobotIn1week extends LinearOpMode implements ServoVariables {
 
     @Override
     public void runOpMode() throws InterruptedException  {

@@ -8,9 +8,6 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.I2cAddr;
-import com.qualcomm.robotcore.hardware.I2cDevice;
-import com.qualcomm.robotcore.hardware.I2cDeviceSynch;
-import com.qualcomm.robotcore.hardware.I2cDeviceSynchImpl;
 import com.qualcomm.robotcore.hardware.LightSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
@@ -19,7 +16,7 @@ import com.qualcomm.robotcore.hardware.UltrasonicSensor;
 @Disabled
 @Autonomous(name = "AUTO RED", group = "full")
 
-public class PTTF_AUTO_RED extends LinearOpMode implements ServoVariables{
+public class PTTF_AUTO_RED extends LinearOpMode implements org.firstinspires.ftc.teamcode.ServoVariables {
     public void Forward(double omw, double pwr) {
         boolean loop = true;
         DcMotor LFdrive = hardwareMap.dcMotor.get("LFdrive");
