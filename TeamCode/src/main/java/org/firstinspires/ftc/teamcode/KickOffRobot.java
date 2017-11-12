@@ -90,7 +90,6 @@ public class KickOffRobot extends LinearOpMode implements org.firstinspires.ftc.
             }
 
 
-
             if (gamepad2.a) {
                 GlyphgrabLPos += 0.01;
                 GlyphgrabRPos -= 0.01;
