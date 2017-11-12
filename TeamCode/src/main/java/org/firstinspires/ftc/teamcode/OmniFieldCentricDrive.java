@@ -24,15 +24,18 @@ public class OmniFieldCentricDrive extends LinearOpMode {
         double RBpower = 0;
         double fastency = 1;
 
+        double forward =0;
+
         double fwd = gamepad1.left_stick_y;
         double stf = gamepad1.left_stick_x;
+        double rcw = gamepad1.right_stick_x;
 
         double gyroyaw = imu.getAngles()[0];
-        double temp = (fwd * Math.cos(gyroyaw) + stf * Math.sin(gyroyaw));
+        float temp = (float) (fwd * Math.cos(gyroyaw) + stf * Math.sin(gyroyaw));
 
-        double strf = (-fwd * Math.sin(gyroyaw) + stf * Math.cos(gyroyaw));
-        double forward = temp;
-        double strafe = strf;
+        stf = -fwd * Math.sin(gyroyaw) + stf * Math.cos(gyroyaw);
+        forward = temp;
+
 
         DcMotor LFdrive = hardwareMap.dcMotor.get("LFdrive");
         DcMotor RBdrive = hardwareMap.dcMotor.get("RBdrive");
@@ -51,6 +54,7 @@ public class OmniFieldCentricDrive extends LinearOpMode {
 
         while (opModeIsActive()) {
             if (gamepad1.dpad_up)     fastency = 1;
+            if (gamepad1.dpad_right)  fastency = .5;
             if (gamepad1.dpad_down)   fastency = 0.3;
 
             RFpower = 0;
@@ -59,29 +63,29 @@ public class OmniFieldCentricDrive extends LinearOpMode {
             LBpower = 0;
 
 
-            RFpower = -((forward + strafe) / 2);
-            RBpower = -((forward - strafe) / 2);
-            LFpower = -((forward - strafe) / 2);
-            LBpower = -((forward + strafe) / 2);
+            RFpower = -((forward + stf) / 2);
+            RBpower = -((forward - stf) / 2);
+            LFpower = -((forward - stf) / 2);
+            LBpower = -((forward + stf) / 2);
 
             //RIGHT STICK
-            RFpower = RFpower - (strafe);
-            RBpower = RBpower - (strafe);
-            LFpower = LFpower + (strafe);
-            LBpower = LBpower + (strafe);
+            RFpower = RFpower - (rcw);
+            RBpower = RBpower - (rcw);
+            LFpower = LFpower + (rcw);
+            LBpower = LBpower + (rcw);
 
 
-            if (strafe > -0.1 && strafe < 0.1) {
+            if (stf > -0.1 && stf < 0.1) {
                 RFpower = -forward;
                 RBpower = -forward;
                 LFpower = -forward;
                 LBpower = -forward;
             }
             if (forward > -0.1 && forward < 0.1) {
-                RFpower = -strafe;
-                RBpower = strafe;
-                LFpower = strafe;
-                LBpower = -strafe;
+                RFpower = -stf;
+                RBpower = stf;
+                LFpower = stf;
+                LBpower = -stf;
             }
 
             Range.clip(RFpower, -1, 1);
