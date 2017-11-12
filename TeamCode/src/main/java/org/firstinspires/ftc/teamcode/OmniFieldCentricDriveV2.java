@@ -11,9 +11,8 @@ import com.qualcomm.robotcore.hardware.configuration.MatrixConstants;
 import com.qualcomm.robotcore.util.Range;
 
 
-@TeleOp(name="OmniFieldCentricDrive", group="PinktotheFuture")
-public class OmniFieldCentricDrive extends LinearOpMode {
-
+@TeleOp(name="fieldcentric2", group="PinktotheFuture")
+public class OmniFieldCentricDriveV2 extends LinearOpMode {
     bno055driver imu;
 
     @Override
@@ -24,19 +23,21 @@ public class OmniFieldCentricDrive extends LinearOpMode {
         double RBpower = 0;
         double fastency = 1;
 
+        double gyro = imu.getAngles()[0];
+        double newZ;
 
+        double K2 = 0;
+        double K1 = 0;
+        double JoyZ = gamepad1.left_stick_x;
 
-        double forward =0;
+        newZ = JoyZ + K1*(JoyZ-K2*gyro);
 
-        double fwd = gamepad1.left_stick_y;
-        double stf = gamepad1.left_stick_x;
-        double rcw = gamepad1.right_stick_x;
-
-        double gyroyaw = imu.getAngles()[0];
-        float temp = (float) (fwd * Math.cos(gyroyaw) + stf * Math.sin(gyroyaw));
-
-        stf = -fwd * Math.sin(gyroyaw) + stf * Math.cos(gyroyaw);
-        forward = temp;
+        if (newZ>1) {
+           newZ =1;
+        }
+        else if (newZ<-1) {
+            newZ = -1;
+        }
 
 
         DcMotor LFdrive = hardwareMap.dcMotor.get("LFdrive");
@@ -49,14 +50,11 @@ public class OmniFieldCentricDrive extends LinearOpMode {
         LBdrive.setDirection(DcMotorSimple.Direction.REVERSE);
         LFdrive.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        imu = new bno055driver("IMU", hardwareMap);
-
         waitForStart();
 
 
         while (opModeIsActive()) {
             if (gamepad1.dpad_up)     fastency = 1;
-            if (gamepad1.dpad_right)  fastency = .5;
             if (gamepad1.dpad_down)   fastency = 0.3;
 
             RFpower = 0;
@@ -65,29 +63,29 @@ public class OmniFieldCentricDrive extends LinearOpMode {
             LBpower = 0;
 
 
-            RFpower = -((forward + stf) / 2);
-            RBpower = -((forward - stf) / 2);
-            LFpower = -((forward - stf) / 2);
-            LBpower = -((forward + stf) / 2);
+            RFpower = -((gamepad1.left_stick_y + gamepad1.left_stick_x) / 2);
+            RBpower = -((gamepad1.left_stick_y - gamepad1.left_stick_x) / 2);
+            LFpower = -((gamepad1.left_stick_y - gamepad1.left_stick_x) / 2);
+            LBpower = -((gamepad1.left_stick_y + gamepad1.left_stick_x) / 2);
 
             //RIGHT STICK
-            RFpower = RFpower - (rcw);
-            RBpower = RBpower - (rcw);
-            LFpower = LFpower + (rcw);
-            LBpower = LBpower + (rcw);
+            RFpower = RFpower - (newZ);
+            RBpower = RBpower - (newZ);
+            LFpower = LFpower + (newZ);
+            LBpower = LBpower + (newZ);
 
 
-            if (stf > -0.1 && stf < 0.1) {
-                RFpower = -forward;
-                RBpower = -forward;
-                LFpower = -forward;
-                LBpower = -forward;
+            if (gamepad1.left_stick_x > -0.1 && gamepad1.left_stick_x < 0.1) {
+                RFpower = -gamepad1.left_stick_y;
+                RBpower = -gamepad1.left_stick_y;
+                LFpower = -gamepad1.left_stick_y;
+                LBpower = -gamepad1.left_stick_y;
             }
-            if (forward > -0.1 && forward < 0.1) {
-                RFpower = -stf;
-                RBpower = stf;
-                LFpower = stf;
-                LBpower = -stf;
+            if (gamepad1.left_stick_y > -0.1 && gamepad1.left_stick_y < 0.1) {
+                RFpower = -gamepad1.left_stick_x;
+                RBpower = gamepad1.left_stick_x;
+                LFpower = gamepad1.left_stick_x;
+                LBpower = -gamepad1.left_stick_x;
             }
 
             Range.clip(RFpower, -1, 1);
@@ -101,8 +99,6 @@ public class OmniFieldCentricDrive extends LinearOpMode {
             RBdrive.setPower(RBpower * fastency);
             LBdrive.setPower(LBpower * fastency);
             RFdrive.setPower(RFpower * fastency);
-
-
 
             telemetry.addData("LB",LBpower);
             telemetry.addData("LF",LFpower);
