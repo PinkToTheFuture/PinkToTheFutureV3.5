@@ -11,7 +11,7 @@ import com.qualcomm.robotcore.hardware.configuration.MatrixConstants;
 import com.qualcomm.robotcore.util.Range;
 
 
-@TeleOp(name="fieldcentric2", group="PinktotheFuture")
+@TeleOp(name="OmniFieldCentricDriveV2", group="PinktotheFuture")
 public class OmniFieldCentricDriveV2 extends LinearOpMode {
     bno055driver imu;
 
@@ -23,21 +23,6 @@ public class OmniFieldCentricDriveV2 extends LinearOpMode {
         double RBpower = 0;
         double fastency = 1;
 
-        double gyro = imu.getAngles()[0];
-        double newZ;
-
-        double K2 = 0;
-        double K1 = 0;
-        double JoyZ = gamepad1.left_stick_x;
-
-        newZ = JoyZ + K1*(JoyZ-K2*gyro);
-
-        if (newZ>1) {
-           newZ =1;
-        }
-        else if (newZ<-1) {
-            newZ = -1;
-        }
 
         imu = new bno055driver("IMU", hardwareMap);
 
@@ -57,6 +42,23 @@ public class OmniFieldCentricDriveV2 extends LinearOpMode {
         while (opModeIsActive()) {
             if (gamepad1.dpad_up)     fastency = 1;
             if (gamepad1.dpad_down)   fastency = 0.3;
+
+            double gyro = imu.getAngles()[0];
+            double newZ;
+
+            double K2 = 0;
+            double K1 = 0;
+            double JoyZ = gamepad1.left_stick_x;
+
+            newZ = JoyZ + K1*(JoyZ-K2*gyro);
+
+            if (newZ>1) {
+                newZ =1;
+            }
+            else if (newZ<-1) {
+                newZ = -1;
+            }
+
 
             RFpower = 0;
             RBpower = 0;

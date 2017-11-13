@@ -11,7 +11,7 @@ import com.qualcomm.robotcore.hardware.configuration.MatrixConstants;
 import com.qualcomm.robotcore.util.Range;
 
 
-@TeleOp(name="Omni victors rijden", group="PinktotheFuture")
+@TeleOp(name="OmniFieldCentricDriveV3", group="PinktotheFuture")
 public class OmniFieldCentricDriveV3 extends LinearOpMode {
     bno055driver imu;
 
@@ -23,20 +23,13 @@ public class OmniFieldCentricDriveV3 extends LinearOpMode {
         double RBpower = 0;
         double fastency = 1;
 
-        double forward = -gamepad1.left_stick_y;
-        double strafe = gamepad1.left_stick_x;
-        double rcw = gamepad1.right_stick_x;
+        //double K1 = 0.5; //increase value not higher than 1
 
-        double K1 = 0; //increase value not higher than 1
+        //rcw = rcw*K1;
 
-        rcw = rcw*K1;
 
-        double theta = imu.getAngles()[0];
         imu = new bno055driver("IMU", hardwareMap);
 
-        double temp;
-
-        double max = Math.abs(LFpower);
 
 
         DcMotor LFdrive = hardwareMap.dcMotor.get("LFdrive");
@@ -57,13 +50,22 @@ public class OmniFieldCentricDriveV3 extends LinearOpMode {
             if (gamepad1.dpad_right) fastency =.5;
             if (gamepad1.dpad_down)   fastency = 0.3;
 
-            if (theta <=1) {
+            double temp;
+
+            double max = Math.abs(LFpower);
+            double theta = imu.getAngles()[0];
+
+            double forward = -gamepad1.left_stick_y;
+            double strafe = gamepad1.left_stick_x;
+            double rcw = gamepad1.right_stick_x;
+
+            if (theta <0) {
                 temp = forward*Math.cos(theta)+strafe*Math.sin(theta);
                 strafe = -forward*Math.sin(theta)+strafe*Math.cos(theta);
                 forward = temp;
             }
 
-            if (theta >=1) {
+            if (theta >0) {
                 temp = forward*Math.cos(theta)-strafe*Math.sin(theta);
                 strafe = forward*Math.sin(theta)+strafe*Math.cos(theta);
                 forward = temp;

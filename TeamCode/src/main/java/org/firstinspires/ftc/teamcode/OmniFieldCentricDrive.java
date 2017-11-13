@@ -11,7 +11,7 @@ import com.qualcomm.robotcore.hardware.configuration.MatrixConstants;
 import com.qualcomm.robotcore.util.Range;
 
 
-@TeleOp(name="OmniFieldCentricDrive", group="PinktotheFuture")
+@TeleOp(name="OmniFieldCentricDriveV1", group="PinktotheFuture")
 public class OmniFieldCentricDrive extends LinearOpMode {
 
     bno055driver imu;
@@ -26,17 +26,7 @@ public class OmniFieldCentricDrive extends LinearOpMode {
 
 
 
-        double forward =0;
 
-        double fwd = gamepad1.left_stick_y;
-        double stf = gamepad1.left_stick_x;
-        double rcw = gamepad1.right_stick_x;
-
-        double gyroyaw = imu.getAngles()[0];
-        float temp = (float) (fwd * Math.cos(gyroyaw) + stf * Math.sin(gyroyaw));
-
-        stf = -fwd * Math.sin(gyroyaw) + stf * Math.cos(gyroyaw);
-        forward = temp;
 
 
         DcMotor LFdrive = hardwareMap.dcMotor.get("LFdrive");
@@ -58,6 +48,18 @@ public class OmniFieldCentricDrive extends LinearOpMode {
             if (gamepad1.dpad_up)     fastency = 1;
             if (gamepad1.dpad_right)  fastency = .5;
             if (gamepad1.dpad_down)   fastency = 0.3;
+
+            double forward =0;
+
+            double fwd = gamepad1.left_stick_y;
+            double stf = gamepad1.left_stick_x;
+            double rcw = gamepad1.right_stick_x;
+
+            double gyroyaw = imu.getAngles()[0];
+            float temp = (float) (fwd * Math.cos(gyroyaw) + stf * Math.sin(gyroyaw));
+
+            stf = -fwd * Math.sin(gyroyaw) + stf * Math.cos(gyroyaw);
+            forward = temp;
 
             RFpower = 0;
             RBpower = 0;
