@@ -11,8 +11,8 @@ import com.qualcomm.robotcore.hardware.configuration.MatrixConstants;
 import com.qualcomm.robotcore.util.Range;
 
 
-@TeleOp(name="fieldcentric2", group="PinktotheFuture")
-public class OmniFieldCentricDriveV2 extends LinearOpMode {
+@TeleOp(name="Omni victors rijden", group="PinktotheFuture")
+public class OmniFieldCentricDriveV3 extends LinearOpMode {
     bno055driver imu;
 
     @Override
@@ -23,23 +23,23 @@ public class OmniFieldCentricDriveV2 extends LinearOpMode {
         double RBpower = 0;
         double fastency = 1;
 
-        double gyro = imu.getAngles()[0];
-        double newZ;
+        double forward = -gamepad1.left_stick_y;
+        double strafe = gamepad1.left_stick_x;
+        double rcw = gamepad1.right_stick_x;
 
-        double K2 = 0;
-        double K1 = 0;
-        double JoyZ = gamepad1.left_stick_x;
+        double K1 = 0; //increase value not higher than 1
 
-        newZ = JoyZ + K1*(JoyZ-K2*gyro);
+        rcw = rcw*K1;
 
-        if (newZ>1) {
-           newZ =1;
-        }
-        else if (newZ<-1) {
-            newZ = -1;
-        }
-
+        double theta = imu.getAngles()[0];
         imu = new bno055driver("IMU", hardwareMap);
+
+        double temp;
+
+
+
+
+
 
         DcMotor LFdrive = hardwareMap.dcMotor.get("LFdrive");
         DcMotor RBdrive = hardwareMap.dcMotor.get("RBdrive");
@@ -58,6 +58,16 @@ public class OmniFieldCentricDriveV2 extends LinearOpMode {
             if (gamepad1.dpad_up)     fastency = 1;
             if (gamepad1.dpad_down)   fastency = 0.3;
 
+            if (imu.getAngles()[0] =<0) {
+                temp = forward*Math.cos(theta)+strafe*Math.sin(theta);
+                strafe = -forward*Math.sin(theta)+strafe*Math.cos(theta);
+                forward = temp;
+            }
+
+            if (imu.getAngles()[0] =>0) {
+
+            }
+
             RFpower = 0;
             RBpower = 0;
             LFpower = 0;
@@ -70,10 +80,10 @@ public class OmniFieldCentricDriveV2 extends LinearOpMode {
             LBpower = -((gamepad1.left_stick_y + gamepad1.left_stick_x) / 2);
 
             //RIGHT STICK
-            RFpower = RFpower - (newZ);
-            RBpower = RBpower - (newZ);
-            LFpower = LFpower + (newZ);
-            LBpower = LBpower + (newZ);
+            RFpower = RFpower - (gamepad1.right_stick_x);
+            RBpower = RBpower - (gamepad1.right_stick_x);
+            LFpower = LFpower + (gamepad1.right_stick_x);
+            LBpower = LBpower + (gamepad1.right_stick_x);
 
 
             if (gamepad1.left_stick_x > -0.1 && gamepad1.left_stick_x < 0.1) {
