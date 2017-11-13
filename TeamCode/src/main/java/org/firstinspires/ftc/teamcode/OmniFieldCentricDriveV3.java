@@ -36,9 +36,7 @@ public class OmniFieldCentricDriveV3 extends LinearOpMode {
 
         double temp;
 
-
-
-
+        double max = Math.abs(LFpower);
 
 
         DcMotor LFdrive = hardwareMap.dcMotor.get("LFdrive");
@@ -56,16 +54,19 @@ public class OmniFieldCentricDriveV3 extends LinearOpMode {
 
         while (opModeIsActive()) {
             if (gamepad1.dpad_up)     fastency = 1;
+            if (gamepad1.dpad_right) fastency =.5;
             if (gamepad1.dpad_down)   fastency = 0.3;
 
-            if (imu.getAngles()[0] =<0) {
+            if (theta <=1) {
                 temp = forward*Math.cos(theta)+strafe*Math.sin(theta);
                 strafe = -forward*Math.sin(theta)+strafe*Math.cos(theta);
                 forward = temp;
             }
 
-            if (imu.getAngles()[0] =>0) {
-
+            if (theta >=1) {
+                temp = forward*Math.cos(theta)-strafe*Math.sin(theta);
+                strafe = forward*Math.sin(theta)+strafe*Math.cos(theta);
+                forward = temp;
             }
 
             RFpower = 0;
@@ -74,36 +75,27 @@ public class OmniFieldCentricDriveV3 extends LinearOpMode {
             LBpower = 0;
 
 
-            RFpower = -((gamepad1.left_stick_y + gamepad1.left_stick_x) / 2);
-            RBpower = -((gamepad1.left_stick_y - gamepad1.left_stick_x) / 2);
-            LFpower = -((gamepad1.left_stick_y - gamepad1.left_stick_x) / 2);
-            LBpower = -((gamepad1.left_stick_y + gamepad1.left_stick_x) / 2);
+            LFpower = forward+rcw+strafe;
+            RFpower = forward-rcw-strafe;
+            LBpower = forward+rcw-strafe;
+            RBpower = forward-rcw+strafe;
 
-            //RIGHT STICK
-            RFpower = RFpower - (gamepad1.right_stick_x);
-            RBpower = RBpower - (gamepad1.right_stick_x);
-            LFpower = LFpower + (gamepad1.right_stick_x);
-            LBpower = LBpower + (gamepad1.right_stick_x);
-
-
-            if (gamepad1.left_stick_x > -0.1 && gamepad1.left_stick_x < 0.1) {
-                RFpower = -gamepad1.left_stick_y;
-                RBpower = -gamepad1.left_stick_y;
-                LFpower = -gamepad1.left_stick_y;
-                LBpower = -gamepad1.left_stick_y;
+            if (Math.abs(RFpower)>max) {
+                max = Math.abs(RFpower);
             }
-            if (gamepad1.left_stick_y > -0.1 && gamepad1.left_stick_y < 0.1) {
-                RFpower = -gamepad1.left_stick_x;
-                RBpower = gamepad1.left_stick_x;
-                LFpower = gamepad1.left_stick_x;
-                LBpower = -gamepad1.left_stick_x;
+            if (Math.abs(LBpower)>max) {
+                max = Math.abs(LBpower);
+            }
+            if (Math.abs(RBpower)>max) {
+                max = Math.abs(RBpower);
             }
 
-            Range.clip(RFpower, -1, 1);
-            Range.clip(RBpower, -1, 1);
-            Range.clip(LFpower, -1, 1);
-            Range.clip(LBpower, -1, 1);
-
+            if (max>1) {
+                LFpower/=max;
+                RFpower/=max;
+                LBpower/=max;
+                RBpower/=max;
+            }
 
 
             LFdrive.setPower(LFpower * fastency);
