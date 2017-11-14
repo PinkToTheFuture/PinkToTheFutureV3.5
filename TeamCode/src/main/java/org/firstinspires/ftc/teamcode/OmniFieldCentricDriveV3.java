@@ -59,13 +59,13 @@ public class OmniFieldCentricDriveV3 extends LinearOpMode {
             double strafe = gamepad1.left_stick_x;
             double rcw = gamepad1.right_stick_x;
 
-            if (theta <0) {
-                temp = forward*Math.cos(theta)+strafe*Math.sin(theta);
-                strafe = -forward*Math.sin(theta)+strafe*Math.cos(theta);
+            if (theta >0) {
+                temp = forward*Math.cos(theta)-strafe*Math.sin(theta);
+                strafe = forward*Math.sin(theta)+strafe*Math.cos(theta);
                 forward = temp;
             }
 
-            if (theta >0) {
+            if (theta <=0) {
                 temp = forward*Math.cos(theta)-strafe*Math.sin(theta);
                 strafe = forward*Math.sin(theta)+strafe*Math.cos(theta);
                 forward = temp;
@@ -99,11 +99,21 @@ public class OmniFieldCentricDriveV3 extends LinearOpMode {
                 RBpower/=max;
             }
 
+            Range.clip(RFpower, -1, 1);
+            Range.clip(RBpower, -1, 1);
+            Range.clip(LFpower, -1, 1);
+            Range.clip(LBpower, -1, 1);
+
 
             LFdrive.setPower(LFpower * fastency);
             RBdrive.setPower(RBpower * fastency);
             LBdrive.setPower(LBpower * fastency);
             RFdrive.setPower(RFpower * fastency);
+
+            telemetry.addData("Yaw(rad): ", theta);
+            telemetry.addData("Yaw(deg): ", theta*180/Math.PI);
+            telemetry.addData("temp", forward);
+            telemetry.addData("strafe: ", strafe);
 
             telemetry.addData("LB",LBpower);
             telemetry.addData("LF",LFpower);

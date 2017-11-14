@@ -41,9 +41,13 @@ public class bno055driver {
         double z = quatAngles.z;
 
         // for the Adafruit IMU, yaw and roll are switched
-        double roll = Math.atan2( 2*(w*x + y*z) , 1 - 2*(x*x + y*y) ) * 180.0 / Math.PI;
-        double pitch = Math.asin( 2*(w*y - x*z) ) * 180.0 / Math.PI;
-        double yaw = Math.atan2( 2*(w*z + x*y), 1 - 2*(y*y + z*z) ) * 180.0 / Math.PI;
+        //double roll = Math.atan2( 2*(w*x + y*z) , 1 - 2*(x*x + y*y) ) * 180.0 / Math.PI;
+        //double pitch = Math.asin( 2*(w*y - x*z) ) * 180.0 / Math.PI;
+        //double yaw = Math.atan2( 2*(w*z + x*y), 1 - 2*(y*y + z*z) ) * 180.0 / Math.PI;
+
+        double roll = Math.atan2( 2*(w*x + y*z) , 1 - 2*(x*x + y*y) );
+        double pitch = Math.asin( 2*(w*y - x*z) );
+        double yaw = Math.atan2( 2*(w*z + x*y), 1 - 2*(y*y + z*z) );
 
         return new double[]{yaw, pitch, roll};
 
