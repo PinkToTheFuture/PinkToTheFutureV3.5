@@ -21,7 +21,7 @@ public class OmniFieldCentricDriveV3 extends LinearOpMode {
         double LBpower = 0;
         double RFpower = 0;
         double RBpower = 0;
-        double fastency = 1;
+        double speed = 1;
 
         //double K1 = 0.5; //increase value not higher than 1
 
@@ -42,17 +42,22 @@ public class OmniFieldCentricDriveV3 extends LinearOpMode {
         LBdrive.setDirection(DcMotorSimple.Direction.REVERSE);
         LFdrive.setDirection(DcMotorSimple.Direction.REVERSE);
 
+        LFdrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        RBdrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        LBdrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        RFdrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
         waitForStart();
 
 
         while (opModeIsActive()) {
-            if (gamepad1.dpad_up)     fastency = 1;
-            if (gamepad1.dpad_right) fastency =.5;
-            if (gamepad1.dpad_down)   fastency = 0.3;
+            if (gamepad1.dpad_up)     speed = 1;
+            if (gamepad1.dpad_right) speed =.6;
+            if (gamepad1.dpad_down)   speed = 0.4;
 
             double temp;
 
-            double max = Math.abs(LFpower);
+            //double max = Math.abs(LFpower);
             double theta = imu.getAngles()[0];
 
             double forward = -gamepad1.left_stick_y;
@@ -82,6 +87,7 @@ public class OmniFieldCentricDriveV3 extends LinearOpMode {
             LBpower = forward+rcw-strafe;
             RBpower = forward-rcw+strafe;
 
+            /*
             if (Math.abs(RFpower)>max) {
                 max = Math.abs(RFpower);
             }
@@ -91,13 +97,16 @@ public class OmniFieldCentricDriveV3 extends LinearOpMode {
             if (Math.abs(RBpower)>max) {
                 max = Math.abs(RBpower);
             }
+            */
 
-            if (max>1) {
+            /*if (max>1) {
                 LFpower/=max;
                 RFpower/=max;
                 LBpower/=max;
                 RBpower/=max;
             }
+            */
+
 
             Range.clip(RFpower, -1, 1);
             Range.clip(RBpower, -1, 1);
@@ -105,20 +114,20 @@ public class OmniFieldCentricDriveV3 extends LinearOpMode {
             Range.clip(LBpower, -1, 1);
 
 
-            LFdrive.setPower(LFpower * fastency);
-            RBdrive.setPower(RBpower * fastency);
-            LBdrive.setPower(LBpower * fastency);
-            RFdrive.setPower(RFpower * fastency);
+            LFdrive.setPower(LFpower * speed);
+            RBdrive.setPower(RBpower * speed);
+            LBdrive.setPower(LBpower * speed);
+            RFdrive.setPower(RFpower * speed);
 
             telemetry.addData("Yaw(rad): ", theta);
             telemetry.addData("Yaw(deg): ", theta*180/Math.PI);
             telemetry.addData("temp", forward);
             telemetry.addData("strafe: ", strafe);
 
-            telemetry.addData("LB",LBpower);
-            telemetry.addData("LF",LFpower);
-            telemetry.addData("RB",RBpower);
-            telemetry.addData("RF",RFpower);
+            telemetry.addData("LB",Math.round(LBpower));
+            telemetry.addData("LF",Math.round(LFpower));
+            telemetry.addData("RB",Math.round(RBpower));
+            telemetry.addData("RF",Math.round(RFpower));
             telemetry.update();
 
 

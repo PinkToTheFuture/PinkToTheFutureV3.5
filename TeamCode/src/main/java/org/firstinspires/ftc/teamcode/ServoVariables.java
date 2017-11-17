@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode;
 
 public interface ServoVariables {
 
+
+
     double ArmservoForwardPosition = 1;
     double ArmservoStopPosition = 0.5;
     double ArmservoBackPosition = 0;

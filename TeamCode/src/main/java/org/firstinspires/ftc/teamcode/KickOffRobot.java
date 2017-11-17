@@ -69,12 +69,6 @@ public class KickOffRobot extends LinearOpMode implements org.firstinspires.ftc.
             LFpower = -((gamepad1.left_stick_y - gamepad1.left_stick_x) / 2);
             LBpower = -((gamepad1.left_stick_y + gamepad1.left_stick_x) / 2);
 
-            //RIGHT STICK
-            RFpower = RFpower - (gamepad1.right_stick_x);
-            RBpower = RBpower - (gamepad1.right_stick_x);
-            LFpower = LFpower + (gamepad1.right_stick_x);
-            LBpower = LBpower + (gamepad1.right_stick_x);
-
 
             if (gamepad1.left_stick_x > -0.1 && gamepad1.left_stick_x < 0.1) {
                 RFpower = -gamepad1.left_stick_y;
@@ -89,6 +83,10 @@ public class KickOffRobot extends LinearOpMode implements org.firstinspires.ftc.
                 LBpower = -gamepad1.left_stick_x;
             }
 
+            RFpower = RFpower - (gamepad1.right_stick_x);
+            RBpower = RBpower - (gamepad1.right_stick_x);
+            LFpower = LFpower + (gamepad1.right_stick_x);
+            LBpower = LBpower + (gamepad1.right_stick_x);
 
             if (gamepad2.a) {
                 GlyphgrabLPos += 0.01;

@@ -42,8 +42,8 @@ public class BalanceSimpleTest extends LinearOpMode {
 
         imu = new bno055driver("IMU", hardwareMap);
 
-        double Pv = 25;     //pitch value
-        double Rv = 15;     //roll value
+        double Pv = 17;     //pitch value
+        double Rv = 10;     //roll value
 
         double LFpower = 0;
         double RFpower = 0;
