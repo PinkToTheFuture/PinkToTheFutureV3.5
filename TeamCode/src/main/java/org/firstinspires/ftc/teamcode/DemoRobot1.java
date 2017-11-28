@@ -11,8 +11,8 @@ import com.qualcomm.robotcore.hardware.configuration.MatrixConstants;
 import com.qualcomm.robotcore.util.Range;
 
 
-@TeleOp(name="OmniFieldCentricDriveV3", group="PinktotheFuture")
-public class OmniFieldCentricDriveV3 extends LinearOpMode {
+@TeleOp(name="DemoRobot1", group="PinktotheFuture")
+public class DemoRobot1 extends LinearOpMode {
     bno055driver imu;
 
     @Override
@@ -30,15 +30,15 @@ public class OmniFieldCentricDriveV3 extends LinearOpMode {
 
         imu = new bno055driver("IMU", hardwareMap);
 
-        Double[] imuArray;
-        imuArray = new Double[1];
-
 
 
         DcMotor LFdrive = hardwareMap.dcMotor.get("LFdrive");
         DcMotor RBdrive = hardwareMap.dcMotor.get("RBdrive");
         DcMotor LBdrive = hardwareMap.dcMotor.get("LBdrive");
         DcMotor RFdrive = hardwareMap.dcMotor.get("RFdrive");
+
+        DcMotor Geleider = hardwareMap.dcMotor.get("geleider");
+        Geleider.setDirection(DcMotorSimple.Direction.REVERSE);
 
         //RFdrive.setDirection(DcMotorSimple.Direction.REVERSE);
         //RBdrive.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -90,25 +90,6 @@ public class OmniFieldCentricDriveV3 extends LinearOpMode {
             LBpower = forward+rcw-strafe;
             RBpower = forward-rcw+strafe;
 
-            /*
-            if (Math.abs(RFpower)>max) {
-                max = Math.abs(RFpower);
-            }
-            if (Math.abs(LBpower)>max) {
-                max = Math.abs(LBpower);
-            }
-            if (Math.abs(RBpower)>max) {
-                max = Math.abs(RBpower);
-            }
-            */
-
-            /*if (max>1) {
-                LFpower/=max;
-                RFpower/=max;
-                LBpower/=max;
-                RBpower/=max;
-            }
-            */
 
             if (gamepad1.b) {
                 LFdrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -136,18 +117,10 @@ public class OmniFieldCentricDriveV3 extends LinearOpMode {
             LBdrive.setPower(LBpower * speed);
             RFdrive.setPower(RFpower * speed);
 
-            telemetry.addData("Yaw(rad): ", theta);
-            telemetry.addData("Yaw(deg): ", theta*180/Math.PI);
-            telemetry.addData("temp", forward);
-            telemetry.addData("strafe: ", strafe);
-
-            telemetry.addData("LB",Math.round(LBpower));
-            telemetry.addData("LF",Math.round(LFpower));
-            telemetry.addData("RB",Math.round(RBpower));
-            telemetry.addData("RF",Math.round(RFpower));
-            telemetry.update();
+            Geleider.setPower(gamepad2.right_stick_y);
 
 
         }
     }
 }
+

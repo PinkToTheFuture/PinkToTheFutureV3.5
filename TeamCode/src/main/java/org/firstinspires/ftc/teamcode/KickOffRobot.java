@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode;
 
 
+import android.net.rtp.AudioStream;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -11,6 +13,7 @@ import com.qualcomm.robotcore.util.Range;
 
 @TeleOp(name="KickOffRobot", group="PinktotheFuture")
 public class KickOffRobot extends LinearOpMode implements org.firstinspires.ftc.teamcode.ServoVariables {
+    bno055driver imu;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -19,12 +22,20 @@ public class KickOffRobot extends LinearOpMode implements org.firstinspires.ftc.
         double RFpower = 0;
         double RBpower = 0;
 
+        imu = new bno055driver("IMU", hardwareMap);
+
         double geleiderPw = 0;
 
         double fastency = 1;
 
         double GlyphgrabLPos = 0.5;
         double GlyphgrabRPos = 0.5;
+
+        boolean correcting = false;
+
+        Double[] imuArray;
+        imuArray = new Double[1];
+        imuArray[0] = 0.0;
 
         Servo RelicSlideOpenerR = hardwareMap.servo.get("relicslideopenerr");
         Servo RelicSlideOpenerL = hardwareMap.servo.get("relicslideopenerl");
@@ -49,12 +60,18 @@ public class KickOffRobot extends LinearOpMode implements org.firstinspires.ftc.
         LBdrive.setDirection(DcMotorSimple.Direction.REVERSE);
         LFdrive.setDirection(DcMotorSimple.Direction.REVERSE);
 
+        LFdrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        RBdrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        LBdrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        RFdrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
         waitForStart();
 
 
         while (opModeIsActive()) {
             if (gamepad1.dpad_up)     fastency = 1;
-            if (gamepad1.dpad_down)   fastency = 0.3;
+            if (gamepad1.dpad_right) fastency =.6;
+            if (gamepad1.dpad_down)   fastency = 0.4;
 
             RFpower = 0;
             RBpower = 0;
@@ -91,6 +108,7 @@ public class KickOffRobot extends LinearOpMode implements org.firstinspires.ftc.
             if (gamepad2.a) {
                 GlyphgrabLPos += 0.01;
                 GlyphgrabRPos -= 0.01;
+
             }
             if (gamepad2.b) {
                 GlyphgrabLPos -= 0.01;
@@ -106,8 +124,53 @@ public class KickOffRobot extends LinearOpMode implements org.firstinspires.ftc.
                 RelicSlideOpenerL.setPosition(RelicSlideLServoMAX);
             }
 
+            double temp;
+
+            double theta = imu.getAngles()[0];
+
+            double forward = -gamepad1.left_stick_y;
+            double strafe = gamepad1.left_stick_x;
+            double rcw = gamepad1.right_stick_x;
+
+            if (theta >0) {
+                temp = forward*Math.cos(theta)-strafe*Math.sin(theta);
+                strafe = forward*Math.sin(theta)+strafe*Math.cos(theta);
+                forward = temp;
+            }
+
+            if (theta <=0) {
+                temp = forward*Math.cos(theta)-strafe*Math.sin(theta);
+                strafe = forward*Math.sin(theta)+strafe*Math.cos(theta);
+                forward = temp;
+            }
+
+            if (Math.abs(gamepad1.left_stick_x) > 0 || Math.abs(gamepad1.left_stick_y) > 0 || Math.abs(gamepad1.right_stick_x) > 0 || Math.abs(gamepad1.right_stick_y) > 0 ){
+                imuArray[0] = theta;
+            }
+
+            double oldAngle = imuArray[0]*180/Math.PI;
+            double newAngle = theta*180/Math.PI;
+
+            double rawDiff = oldAngle > newAngle ? oldAngle - newAngle : newAngle - oldAngle;
+
+            if (theta < 0){
+                rawDiff = rawDiff * -1;
+            }
 
 
+
+
+
+            RFpower = 0;
+            RBpower = 0;
+            LFpower = 0;
+            LBpower = 0;
+
+
+            LFpower = forward+rcw+strafe;
+            RFpower = forward-rcw-strafe;
+            LBpower = forward+rcw-strafe;
+            RBpower = forward-rcw+strafe;
 
             Range.clip(RFpower, -1, 1);
             Range.clip(RBpower, -1, 1);
@@ -120,6 +183,26 @@ public class KickOffRobot extends LinearOpMode implements org.firstinspires.ftc.
             GlyphgrabL.setPosition(GlyphgrabLPos);
             GlyphgrabR.setPosition(GlyphgrabRPos);
 
+            if (Math.abs(gamepad1.left_stick_x) == 0 && Math.abs(gamepad1.left_stick_y) == 0 && Math.abs(gamepad1.right_stick_x) ==  0 && Math.abs(gamepad1.right_stick_y) == 0){
+                if (rawDiff > 5.0){
+                    LFpower = 0.2;
+                    LBpower = 0.2;
+                    RFpower = -0.2;
+                    RBpower = -0.2;
+                }
+
+                if (rawDiff < -5.0){
+                    LFpower = -0.2;
+                    LBpower = -0.2;
+                    RFpower = 0.2;
+                    RBpower = 0.2;
+                }
+
+                correcting = true;
+            }else{
+                correcting = false;
+            }
+
             LFdrive.setPower(LFpower * fastency);
             RBdrive.setPower(RBpower * fastency);
             LBdrive.setPower(LBpower * fastency);
@@ -127,10 +210,14 @@ public class KickOffRobot extends LinearOpMode implements org.firstinspires.ftc.
 
             Geleider.setPower(gamepad2.right_stick_y);
 
-            telemetry.addData("LB",LBpower);
-            telemetry.addData("LF",LFpower);
-            telemetry.addData("RB",RBpower);
-            telemetry.addData("RF",RFpower);
+            //telemetry.addData("LB",LBpower);
+            //telemetry.addData("LF",LFpower);
+            //telemetry.addData("RB",RBpower);
+            //telemetry.addData("RF",RFpower);
+            telemetry.addData("array", imuArray[0]);
+            telemetry.addData("raw", theta);
+            telemetry.addData("rawDiff", rawDiff);
+            telemetry.addData("correcting is:", correcting);
             telemetry.update();
 
 
