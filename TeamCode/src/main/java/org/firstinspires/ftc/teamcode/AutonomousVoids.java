@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 
-public class AutonomousVoids extends LinearOpMode implements org.firstinspires.ftc.robotinoneweek.ServoVariables {
+public class AutonomousVoids extends LinearOpMode  {
     public void Forward(double omw, double pwr) {
         boolean loop = true;
         DcMotor LFdrive = hardwareMap.dcMotor.get("LFdrive");

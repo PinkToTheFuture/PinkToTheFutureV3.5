@@ -1,6 +1,9 @@
 package org.firstinspires.ftc.teamcode;
 
 
+
+import android.app.ActivityManager;
+
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -11,9 +14,12 @@ import com.qualcomm.robotcore.hardware.configuration.MatrixConstants;
 import com.qualcomm.robotcore.util.Range;
 
 
-@TeleOp(name="OmniFieldCentricDriveV3", group="PinktotheFuture")
-public class OmniFieldCentricDriveV3 extends LinearOpMode {
+
+@TeleOp(name="SelfCorrectingMecanum", group="PinktotheFuture")
+public class SelfCorrectingMecanum extends LinearOpMode {
     bno055driver imu;
+
+
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -21,19 +27,9 @@ public class OmniFieldCentricDriveV3 extends LinearOpMode {
         double LBpower = 0;
         double RFpower = 0;
         double RBpower = 0;
-        double speed = 1;
-
-        //double K1 = 0.5; //increase value not higher than 1
-
-        //rcw = rcw*K1;
-
+        double fastency = 1;
 
         imu = new bno055driver("IMU", hardwareMap);
-
-        Double[] imuArray;
-        imuArray = new Double[1];
-
-
 
         DcMotor LFdrive = hardwareMap.dcMotor.get("LFdrive");
         DcMotor RBdrive = hardwareMap.dcMotor.get("RBdrive");
@@ -45,27 +41,57 @@ public class OmniFieldCentricDriveV3 extends LinearOpMode {
         LBdrive.setDirection(DcMotorSimple.Direction.REVERSE);
         LFdrive.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        LFdrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        RBdrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        LBdrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        RFdrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        double[] imuArray = new double[1];
+
 
         waitForStart();
 
 
         while (opModeIsActive()) {
-            if (gamepad1.dpad_up)     speed = 1;
-            if (gamepad1.dpad_right) speed =.6;
-            if (gamepad1.dpad_down)   speed = 0.4;
+            if (gamepad1.dpad_up)     fastency = 1;
+            if (gamepad1.dpad_right) fastency =.5;
+            if (gamepad1.dpad_down)   fastency = 0.3;
 
             double temp;
 
-
+            double max = Math.abs(LFpower);
             double theta = imu.getAngles()[0];
 
             double forward = -gamepad1.left_stick_y;
             double strafe = gamepad1.left_stick_x;
             double rcw = gamepad1.right_stick_x;
+
+            boolean done = true;
+
+
+
+            if (gamepad1.left_stick_y == 0 && gamepad1.left_stick_x == 0 && gamepad1.right_stick_x == 0) {
+                double delta;
+                imuArray[0] = theta;
+                delta = imu.getAngles()[0]- imuArray[0];
+
+                int imuaccel = 0;
+
+
+
+                RFpower = -delta; // + imuaccel * 0.5; voor die tijdens acceleratie tegenwerken
+                RBpower = -delta;
+                LFpower = +delta;
+                LBpower = +delta;
+
+                Range.clip(RFpower, -1, 1);
+                Range.clip(RBpower, -1, 1);
+                Range.clip(LFpower, -1, 1);
+                Range.clip(LBpower, -1, 1);
+
+                LFdrive.setPower(LFpower);
+                RBdrive.setPower(RBpower);
+                LBdrive.setPower(LBpower);
+                RFdrive.setPower(RFpower);
+
+                telemetry.addData("delta: ", delta);
+
+            }
 
             if (theta >0) {
                 temp = forward*Math.cos(theta)-strafe*Math.sin(theta);
@@ -91,20 +117,6 @@ public class OmniFieldCentricDriveV3 extends LinearOpMode {
             RBpower = forward-rcw+strafe;
 
 
-            if (gamepad1.b) {
-                LFdrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-                RBdrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-                LBdrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-                RFdrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            }
-
-            if (gamepad1.a) {
-                LFdrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-                RBdrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-                LBdrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-                RFdrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-            }
-
 
             Range.clip(RFpower, -1, 1);
             Range.clip(RBpower, -1, 1);
@@ -112,23 +124,23 @@ public class OmniFieldCentricDriveV3 extends LinearOpMode {
             Range.clip(LBpower, -1, 1);
 
 
-            LFdrive.setPower(LFpower * speed);
-            RBdrive.setPower(RBpower * speed);
-            LBdrive.setPower(LBpower * speed);
-            RFdrive.setPower(RFpower * speed);
+            LFdrive.setPower(LFpower * fastency);
+            RBdrive.setPower(RBpower * fastency);
+            LBdrive.setPower(LBpower * fastency);
+            RFdrive.setPower(RFpower * fastency);
 
-            telemetry.addData("Yaw(rad): ", theta);
-            telemetry.addData("Yaw(deg): ", theta*180/Math.PI);
-            telemetry.addData("temp", forward);
-            telemetry.addData("strafe: ", strafe);
-
-            telemetry.addData("LB",Math.round(LBpower));
-            telemetry.addData("LF",Math.round(LFpower));
-            telemetry.addData("RB",Math.round(RBpower));
-            telemetry.addData("RF",Math.round(RFpower));
+            telemetry.addData("imuArray: ", imuArray[0]);
+            telemetry.addData("imu: ", imu.getAngles()[0]);
+            telemetry.addData("LB",LBpower);
+            telemetry.addData("LF",LFpower);
+            telemetry.addData("RB",RBpower);
+            telemetry.addData("RF",RFpower);
             telemetry.update();
 
 
         }
     }
+
+
+
 }

@@ -55,7 +55,7 @@ import java.util.Locale;
  * @see <a href="http://www.adafruit.com/products/2472">Adafruit IMU</a>
  */
 @Autonomous(name = "Sensor: BNO055 IMU", group = "Sensor")
-@Disabled                            // Comment this out to add to the opmode list
+                          // Comment this out to add to the opmode list
 public class SensorBNO055IMU extends LinearOpMode
     {
     //----------------------------------------------------------------------------------------------
@@ -68,6 +68,7 @@ public class SensorBNO055IMU extends LinearOpMode
     // State used for updating telemetry
     Orientation angles;
     Acceleration gravity;
+    Acceleration acceleration;
 
     //----------------------------------------------------------------------------------------------
     // Main logic
@@ -122,6 +123,8 @@ public class SensorBNO055IMU extends LinearOpMode
                 // three times the necessary expense.
                 angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
                 gravity  = imu.getGravity();
+                acceleration = imu.getAcceleration();
+
                 }
             });
 
@@ -168,6 +171,14 @@ public class SensorBNO055IMU extends LinearOpMode
                                     + gravity.zAccel*gravity.zAccel));
                     }
                 });
+
+        telemetry.addLine()
+            .addData("accel", new Func<String>() {
+                @Override public String value() {
+                 return acceleration.toString();
+                 }
+            });
+
     }
 
     //----------------------------------------------------------------------------------------------
