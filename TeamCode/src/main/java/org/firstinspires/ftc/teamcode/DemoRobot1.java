@@ -40,6 +40,8 @@ public class DemoRobot1 extends LinearOpMode {
         DcMotor Geleider = hardwareMap.dcMotor.get("geleider");
         Geleider.setDirection(DcMotorSimple.Direction.REVERSE);
 
+
+
         //RFdrive.setDirection(DcMotorSimple.Direction.REVERSE);
         //RBdrive.setDirection(DcMotorSimple.Direction.REVERSE);
         LBdrive.setDirection(DcMotorSimple.Direction.REVERSE);

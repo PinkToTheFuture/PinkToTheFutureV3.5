@@ -16,10 +16,10 @@ import com.qualcomm.robotcore.util.Range;
 
 
 
-@TeleOp(name="SelfCorrectingMecanum", group="PinktotheFuture")
-public class SelfCorrectingMecanum extends LinearOpMode {
-    bno055driver imu2; //to use the second, custom imu driver
-    BNO055IMU imu; // to use the official imu driver
+@TeleOp(name="SelfCorrectingMecanumV2", group="PinktotheFuture")
+public class SelfCorrectingMecanumV2 extends LinearOpMode {
+    bno055driver imu2;
+    BNO055IMU imu;
 
 
 
@@ -33,9 +33,20 @@ public class SelfCorrectingMecanum extends LinearOpMode {
 
         boolean correcting = false;
 
-        Double[] imuArray;
-        imuArray = new Double[1];
-        imuArray[0] = 0.0;
+        Double[] encoderArrayLF;
+        Double[] encoderArrayRB;
+        Double[] encoderArrayLB;
+        Double[] encoderArrayRF;
+
+        encoderArrayLF = new Double[1];
+        encoderArrayRB = new Double[1];
+        encoderArrayLB = new Double[1];
+        encoderArrayRF = new Double[1];
+
+        encoderArrayLF[0] = 0.0;
+        encoderArrayLB[0] = 0.0;
+        encoderArrayRF[0] = 0.0;
+        encoderArrayRB[0] = 0.0;
 
         imu2 = new bno055driver("IMU", hardwareMap);
         imu = hardwareMap.get(BNO055IMU.class, "IMU");
@@ -52,11 +63,7 @@ public class SelfCorrectingMecanum extends LinearOpMode {
 
 
 
-
         waitForStart();
-
-
-
 
         while (opModeIsActive()) {
             if (gamepad1.dpad_up)     fastency = 1;
@@ -65,31 +72,27 @@ public class SelfCorrectingMecanum extends LinearOpMode {
 
             double temp;
 
-            double max = Math.abs(LFpower);
             double theta = imu2.getAngles()[0];
+
+            double LBpos = LBdrive.getCurrentPosition();
+            double LFpos = LFdrive.getCurrentPosition();
+            double RBpos = RBdrive.getCurrentPosition();
+            double RFpos = RFdrive.getCurrentPosition();
+
 
             double forward = -gamepad1.left_stick_y;
             double strafe = gamepad1.left_stick_x;
             double rcw = gamepad1.right_stick_x;
 
 
-
-
-
-            if (Math.abs(gamepad1.left_stick_x) > 0 || Math.abs(gamepad1.left_stick_y) > 0 || Math.abs(gamepad1.right_stick_x) > 0 || Math.abs(gamepad1.right_stick_y) > 0 ){
-                imuArray[0] = theta;
+            if (Math.abs(gamepad1.left_stick_x) > 0 && Math.abs(gamepad1.left_stick_y) > 0 && Math.abs(gamepad1.right_stick_x) > 0 && Math.abs(gamepad1.right_stick_y) > 0 ){
+                encoderArrayLB[0] = LBpos;
+                encoderArrayLF[0] = LFpos;
+                encoderArrayRB[0] = RBpos;
+                encoderArrayRF[0] = RFpos;
             }
 
-            double oldAngle = imuArray[0]*180/Math.PI;
-            double newAngle = theta*180/Math.PI;
-
-            double rawDiff = oldAngle > newAngle ? oldAngle - newAngle : newAngle - oldAngle;
-
-
-
-            if (theta < 0){
-                rawDiff = rawDiff * -1;
-            }
+            //int oldPositionLF = LFpos - encoderArrayLF;
 
             if (theta >0) {
                 temp = forward*Math.cos(theta)-strafe*Math.sin(theta);
@@ -116,19 +119,9 @@ public class SelfCorrectingMecanum extends LinearOpMode {
             RBpower = forward-rcw+strafe;
 
             if (Math.abs(gamepad1.left_stick_x) == 0 && Math.abs(gamepad1.left_stick_y) == 0 && Math.abs(gamepad1.right_stick_x) ==  0 && Math.abs(gamepad1.right_stick_y) == 0){
-                if (rawDiff > 5.0){
-                    LFpower = 0.2;
-                    LBpower = 0.2;
-                    RFpower = -0.2;
-                    RBpower = -0.2;
-                }
+                sleep(500);
 
-                if (rawDiff < -5.0){
-                    LFpower = -0.2;
-                    LBpower = -0.2;
-                    RFpower = 0.2;
-                    RBpower = 0.2;
-                }
+                //LFdrive.setTargetPosition(encoderArrayLF[0]);
 
                 correcting = true;
             }else{
@@ -157,9 +150,7 @@ public class SelfCorrectingMecanum extends LinearOpMode {
 
 
 
-            telemetry.addData("raw", theta);
-            telemetry.addData("rawDiff", rawDiff);
-            telemetry.addData("correcting is:", correcting);
+
 
             telemetry.update();
 

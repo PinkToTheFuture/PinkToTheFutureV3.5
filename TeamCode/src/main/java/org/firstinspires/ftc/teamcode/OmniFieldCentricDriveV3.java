@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -13,7 +14,8 @@ import com.qualcomm.robotcore.util.Range;
 
 @TeleOp(name="OmniFieldCentricDriveV3", group="PinktotheFuture")
 public class OmniFieldCentricDriveV3 extends LinearOpMode {
-    bno055driver imu;
+    bno055driver imu2;
+    BNO055IMU imu;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -28,7 +30,8 @@ public class OmniFieldCentricDriveV3 extends LinearOpMode {
         //rcw = rcw*K1;
 
 
-        imu = new bno055driver("IMU", hardwareMap);
+        imu2 = new bno055driver("IMU", hardwareMap);
+        imu = hardwareMap.get(BNO055IMU.class, "IMU");
 
         Double[] imuArray;
         imuArray = new Double[1];
@@ -61,7 +64,7 @@ public class OmniFieldCentricDriveV3 extends LinearOpMode {
             double temp;
 
 
-            double theta = imu.getAngles()[0];
+            double theta = imu2.getAngles()[0];
 
             double forward = -gamepad1.left_stick_y;
             double strafe = gamepad1.left_stick_x;
@@ -117,7 +120,7 @@ public class OmniFieldCentricDriveV3 extends LinearOpMode {
             LBdrive.setPower(LBpower * speed);
             RFdrive.setPower(RFpower * speed);
 
-            telemetry.addData("Yaw(rad): ", theta);
+            /*telemetry.addData("Yaw(rad): ", theta);
             telemetry.addData("Yaw(deg): ", theta*180/Math.PI);
             telemetry.addData("temp", forward);
             telemetry.addData("strafe: ", strafe);
@@ -126,6 +129,14 @@ public class OmniFieldCentricDriveV3 extends LinearOpMode {
             telemetry.addData("LF",Math.round(LFpower));
             telemetry.addData("RB",Math.round(RBpower));
             telemetry.addData("RF",Math.round(RFpower));
+            */
+            telemetry.addData("acc: ", imu.getAcceleration());
+            telemetry.addData("accLin: ", imu.getLinearAcceleration());
+            telemetry.addData("accOveral: ", imu.getOverallAcceleration());
+
+
+
+
             telemetry.update();
 
 
