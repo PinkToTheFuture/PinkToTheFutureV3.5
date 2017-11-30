@@ -13,6 +13,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.configuration.MatrixConstants;
 import com.qualcomm.robotcore.util.Range;
+import com.sun.tools.javac.util.Convert;
 
 
 
@@ -61,7 +62,22 @@ public class SelfCorrectingMecanumV2 extends LinearOpMode {
         LBdrive.setDirection(DcMotorSimple.Direction.REVERSE);
         LFdrive.setDirection(DcMotorSimple.Direction.REVERSE);
 
+        LFdrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        RFdrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        LFdrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        RFdrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
+        idle();
+        LFdrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        RFdrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        LBdrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        RBdrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        idle();
+        LFdrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        LBdrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        RFdrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        RBdrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         waitForStart();
 
@@ -85,14 +101,18 @@ public class SelfCorrectingMecanumV2 extends LinearOpMode {
             double rcw = gamepad1.right_stick_x;
 
 
-            if (Math.abs(gamepad1.left_stick_x) > 0 && Math.abs(gamepad1.left_stick_y) > 0 && Math.abs(gamepad1.right_stick_x) > 0 && Math.abs(gamepad1.right_stick_y) > 0 ){
+            if (Math.abs(gamepad1.left_stick_x) > 0 || Math.abs(gamepad1.left_stick_y) > 0 || Math.abs(gamepad1.right_stick_x) > 0 || Math.abs(gamepad1.right_stick_y) > 0 ){
                 encoderArrayLB[0] = LBpos;
                 encoderArrayLF[0] = LFpos;
                 encoderArrayRB[0] = RBpos;
                 encoderArrayRF[0] = RFpos;
             }
 
-            //int oldPositionLF = LFpos - encoderArrayLF;
+            double oldPositionLF = LFpos - encoderArrayLF[0];
+            double oldPositionLB = LBpos - encoderArrayLB[0];
+            double oldPositionRF = RFpos - encoderArrayRF[0];
+            double oldPositionRB = RBpos - encoderArrayRB[0];
+
 
             if (theta >0) {
                 temp = forward*Math.cos(theta)-strafe*Math.sin(theta);
@@ -111,20 +131,57 @@ public class SelfCorrectingMecanumV2 extends LinearOpMode {
             LFpower = 0;
             LBpower = 0;
 
-
-
             LFpower = forward+rcw+strafe;
             RFpower = forward-rcw-strafe;
             LBpower = forward+rcw-strafe;
             RBpower = forward-rcw+strafe;
 
             if (Math.abs(gamepad1.left_stick_x) == 0 && Math.abs(gamepad1.left_stick_y) == 0 && Math.abs(gamepad1.right_stick_x) ==  0 && Math.abs(gamepad1.right_stick_y) == 0){
-                sleep(500);
+                double LFpwr;
+                double LBpwr;
+                double RFpwr;
+                double RBpwr;
 
-                //LFdrive.setTargetPosition(encoderArrayLF[0]);
+                if (oldPositionLF<0) {
+                    LFpwr = -.3;
+                }
+                else {
+                    LFpwr =0.3;
+                }
+                if (oldPositionLB<0) {
+                    LBpwr = -.3;
+                }
+                else {
+                    LBpwr =0.3;
+                }
+                if (oldPositionRF<0) {
+                    RFpwr = -.3;
+                }
+                else {
+                    RFpwr =0.3;
+                }
+                if (oldPositionRB<0) {
+                    RBpwr = -.3;
+                }
+                else {
+                    RBpwr =0.3;
+                }
+
+
+                LFdrive.setTargetPosition((int) oldPositionLF);
+                LBdrive.setTargetPosition((int) oldPositionLB);
+                RFdrive.setTargetPosition((int) oldPositionRF);
+                RBdrive.setTargetPosition((int) oldPositionRB);
+
+                LFdrive.setPower(LFpwr);
+                LBdrive.setPower(LBpwr);
+                RFdrive.setPower(RFpwr);
+                RBdrive.setPower(RBpwr);
 
                 correcting = true;
+
             }else{
+
                 correcting = false;
             }
 
@@ -148,9 +205,10 @@ public class SelfCorrectingMecanumV2 extends LinearOpMode {
             telemetry.addData("RF",RFpower);
             */
 
-
-
-
+            telemetry.addData("LFdrive", LFdrive.getCurrentPosition());
+            telemetry.addData("RFdrive", RFdrive.getCurrentPosition());
+            telemetry.addData("LBdrive", LBdrive.getCurrentPosition());
+            telemetry.addData("RBdrive", RBdrive.getCurrentPosition());
 
             telemetry.update();
 
