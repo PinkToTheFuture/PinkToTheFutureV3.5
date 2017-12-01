@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -15,14 +16,18 @@ import com.qualcomm.robotcore.hardware.LightSensor;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.hardware.UltrasonicSensor;
 
+import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 @Autonomous(name = "Cali Sensor", group = "cali")
 
 public class CaliSensors extends LinearOpMode {
 
+    bno055driver imu2;
+    BNO055IMU imu;
+
     @Override public void runOpMode() throws InterruptedException {
-        UltrasonicSensor ultraR = hardwareMap.ultrasonicSensor.get("ultraR");
+        /*UltrasonicSensor ultraR = hardwareMap.ultrasonicSensor.get("ultraR");
         UltrasonicSensor ultraL = hardwareMap.ultrasonicSensor.get("ultraL");
         ColorSensor Lcolor = hardwareMap.colorSensor.get("lcolor");
         Lcolor.setI2cAddress(I2cAddr.create8bit(0x3c));
@@ -61,11 +66,17 @@ public class CaliSensors extends LinearOpMode {
             idle();
         }
         gyro.setHeadingMode(ModernRoboticsI2cGyro.HeadingMode.HEADING_CARDINAL);
+        */
+
+        imu2 = new bno055driver("IMU", hardwareMap);
+        imu = hardwareMap.get(BNO055IMU.class, "IMU");
 
         waitForStart();
 
+
+
         while (opModeIsActive()) {
-            Rrangesensorcache = Rrangereader.read(0x04, 2);
+            /*Rrangesensorcache = Rrangereader.read(0x04, 2);
             int Rrange = Rrangesensorcache[0] & 0xFF;
 
             Lrangesensorcache = Lrangereader.read(0x04, 2);
@@ -82,6 +93,19 @@ public class CaliSensors extends LinearOpMode {
             telemetry.addData("Lcolor red", Lcolor.red());
             telemetry.addData("Rcolor blue", Rcolor.blue());
             telemetry.addData("Rcolor red", Rcolor.red());
+            */
+
+
+            double Xacc;
+            Xacc = imu.getLinearAcceleration().xAccel;
+            double Yacc;
+            Yacc = imu.getLinearAcceleration().yAccel;
+
+            //telemetry.addData("LinearAcc: ", imu.getLinearAcceleration());
+            //telemetry.addData("angular velocity", imu.getAngularVelocity());
+
+            telemetry.addData("Xacc: ", Math.round(Xacc));
+            telemetry.addData("Yacc: ", Math.round(Yacc));
             telemetry.update();
             idle();
         }
