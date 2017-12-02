@@ -101,11 +101,19 @@ public class CaliSensors extends LinearOpMode {
             double Yacc;
             Yacc = imu.getLinearAcceleration().yAccel;
 
+            double postX;
+            postX = imu.getPosition().x;
+            double postY;
+            postY = imu.getPosition().y;
+
+
             //telemetry.addData("LinearAcc: ", imu.getLinearAcceleration());
             //telemetry.addData("angular velocity", imu.getAngularVelocity());
 
             telemetry.addData("Xacc: ", Math.round(Xacc));
             telemetry.addData("Yacc: ", Math.round(Yacc));
+            telemetry.addData("PosX: ", postX);
+            telemetry.addData("PosY: ", postY);
             telemetry.update();
             idle();
         }

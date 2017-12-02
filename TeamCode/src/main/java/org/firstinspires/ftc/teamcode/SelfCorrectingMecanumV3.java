@@ -13,14 +13,14 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.configuration.MatrixConstants;
 import com.qualcomm.robotcore.util.Range;
+import com.sun.tools.javac.util.Convert;
 
 
 
-@TeleOp(name="SelfCorrectingMecanum", group="PinktotheFuture")
-public class SelfCorrectingMecanum extends LinearOpMode {
-    bno055driver imu2; //to use the second, custom imu driver
-    BNO055IMU imu; // to use the official imu driver
-
+@TeleOp(name="SelfCorrectingMecanumV3", group="PinktotheFuture")
+public class SelfCorrectingMecanumV3 extends LinearOpMode {
+    bno055driver imu2;
+    BNO055IMU imu;
 
 
     @Override
@@ -29,13 +29,10 @@ public class SelfCorrectingMecanum extends LinearOpMode {
         double LBpower = 0;
         double RFpower = 0;
         double RBpower = 0;
-        double fastency = 1;
+        double speed = 1;
 
         boolean correcting = false;
 
-        Double[] imuArray;
-        imuArray = new Double[1];
-        imuArray[0] = 0.0;
 
         imu2 = new bno055driver("IMU", hardwareMap);
         imu = hardwareMap.get(BNO055IMU.class, "IMU");
@@ -50,21 +47,24 @@ public class SelfCorrectingMecanum extends LinearOpMode {
         LBdrive.setDirection(DcMotorSimple.Direction.REVERSE);
         LFdrive.setDirection(DcMotorSimple.Direction.REVERSE);
 
+        double Xacc;
+        Xacc = imu.getLinearAcceleration().xAccel;
+        double Yacc;
+        Yacc = imu.getLinearAcceleration().yAccel;
 
+        Double[] imuArray;
+        imuArray = new Double[1];
+        imuArray[0] = 0.0;
 
 
         waitForStart();
 
-
-
-
         while (opModeIsActive()) {
-            if (gamepad1.dpad_up)     fastency = 1;
-            if (gamepad1.dpad_right) fastency =.5;
-            if (gamepad1.dpad_down)   fastency = 0.3;
+            if (gamepad1.dpad_up)     speed = 1;
+            if (gamepad1.dpad_right)  speed =.5;
+            if (gamepad1.dpad_down)   speed = 0.3;
 
             double temp;
-
 
             double theta = imu2.getAngles()[0];
 
@@ -73,18 +73,12 @@ public class SelfCorrectingMecanum extends LinearOpMode {
             double rcw = gamepad1.right_stick_x;
 
 
-
-
-
-            if (Math.abs(gamepad1.left_stick_x) > 0 || Math.abs(gamepad1.left_stick_y) > 0 || Math.abs(gamepad1.right_stick_x) > 0 || Math.abs(gamepad1.right_stick_y) > 0 ){
-                imuArray[0] = theta;
-            }
+            imuArray[0] = theta;
 
             double oldAngle = imuArray[0]*180/Math.PI;
             double newAngle = theta*180/Math.PI;
 
             double rawDiff = oldAngle > newAngle ? oldAngle - newAngle : newAngle - oldAngle;
-
 
 
             if (theta < 0){
@@ -108,14 +102,18 @@ public class SelfCorrectingMecanum extends LinearOpMode {
             LFpower = 0;
             LBpower = 0;
 
-
-
             LFpower = forward+rcw+strafe;
             RFpower = forward-rcw-strafe;
             LBpower = forward+rcw-strafe;
             RBpower = forward-rcw+strafe;
 
             if (Math.abs(gamepad1.left_stick_x) == 0 && Math.abs(gamepad1.left_stick_y) == 0 && Math.abs(gamepad1.right_stick_x) ==  0 && Math.abs(gamepad1.right_stick_y) == 0){
+
+                RFpower = ((Yacc + Xacc) / 2);
+                RBpower = ((Yacc - Xacc) / 2);
+                LFpower = ((Yacc - Xacc) / 2);
+                LBpower = ((Yacc + Xacc) / 2);
+
                 if (rawDiff > 5.0){
                     LFpower = 0.2;
                     LBpower = 0.2;
@@ -130,8 +128,11 @@ public class SelfCorrectingMecanum extends LinearOpMode {
                     RBpower = 0.2;
                 }
 
+
                 correcting = true;
+
             }else{
+
                 correcting = false;
             }
 
@@ -142,10 +143,10 @@ public class SelfCorrectingMecanum extends LinearOpMode {
             Range.clip(LBpower, -1, 1);
 
 
-            LFdrive.setPower(LFpower * fastency);
-            RBdrive.setPower(RBpower * fastency);
-            LBdrive.setPower(LBpower * fastency);
-            RFdrive.setPower(RFpower * fastency);
+            LFdrive.setPower(LFpower * speed);
+            RBdrive.setPower(RBpower * speed);
+            LBdrive.setPower(LBpower * speed);
+            RFdrive.setPower(RFpower * speed);
 
             //telemetry.addData("imuArray: ", imuArray[0]);
             //telemetry.addData("imu: ", imu2.getAngles()[0]);
@@ -155,10 +156,11 @@ public class SelfCorrectingMecanum extends LinearOpMode {
             telemetry.addData("RF",RFpower);
             */
 
+            telemetry.addData("LFdrive", LFdrive.getCurrentPosition());
+            telemetry.addData("RFdrive", RFdrive.getCurrentPosition());
+            telemetry.addData("LBdrive", LBdrive.getCurrentPosition());
+            telemetry.addData("RBdrive", RBdrive.getCurrentPosition());
 
-
-            telemetry.addData("raw", theta);
-            telemetry.addData("rawDiff", rawDiff);
             telemetry.addData("correcting is:", correcting);
 
             telemetry.update();
