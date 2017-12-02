@@ -151,16 +151,17 @@ public class SelfCorrectingMecanumV3 extends LinearOpMode {
 
             //telemetry.addData("imuArray: ", imuArray[0]);
             //telemetry.addData("imu: ", imu2.getAngles()[0]);
-            /*telemetry.addData("LB",LBpower);
+            telemetry.addData("LB",LBpower);
             telemetry.addData("LF",LFpower);
             telemetry.addData("RB",RBpower);
             telemetry.addData("RF",RFpower);
-            */
 
-            telemetry.addData("LFdrive", LFdrive.getCurrentPosition());
-            telemetry.addData("RFdrive", RFdrive.getCurrentPosition());
-            telemetry.addData("LBdrive", LBdrive.getCurrentPosition());
-            telemetry.addData("RBdrive", RBdrive.getCurrentPosition());
+            telemetry.addLine("");
+
+            telemetry.addData("Xacc: ", Math.round(Xacc));
+            telemetry.addData("Yacc: ", Math.round(Yacc));
+
+            telemetry.addLine("");
 
             telemetry.addData("correcting is:", correcting);
 
