@@ -72,8 +72,9 @@ public class SelfCorrectingMecanumV3 extends LinearOpMode {
             double strafe = gamepad1.left_stick_x;
             double rcw = gamepad1.right_stick_x;
 
-
-            imuArray[0] = theta;
+            if (Math.abs(gamepad1.left_stick_x) > 0 || Math.abs(gamepad1.left_stick_y) > 0 || Math.abs(gamepad1.right_stick_x) > 0 || Math.abs(gamepad1.right_stick_y) > 0 ) {
+                imuArray[0] = theta;
+            }
 
             double oldAngle = imuArray[0]*180/Math.PI;
             double newAngle = theta*180/Math.PI;
