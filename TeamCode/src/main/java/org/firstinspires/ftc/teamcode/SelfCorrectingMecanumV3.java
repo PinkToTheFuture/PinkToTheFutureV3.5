@@ -47,10 +47,6 @@ public class SelfCorrectingMecanumV3 extends LinearOpMode {
         LBdrive.setDirection(DcMotorSimple.Direction.REVERSE);
         LFdrive.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        double Xacc;
-        Xacc = imu.getLinearAcceleration().xAccel;
-        double Yacc;
-        Yacc = imu.getLinearAcceleration().yAccel;
 
         Double[] imuArray;
         imuArray = new Double[1];
@@ -63,6 +59,11 @@ public class SelfCorrectingMecanumV3 extends LinearOpMode {
             if (gamepad1.dpad_up)     speed = 1;
             if (gamepad1.dpad_right)  speed =.5;
             if (gamepad1.dpad_down)   speed = 0.3;
+
+            double Xacc;
+            Xacc = ((imu.getLinearAcceleration().xAccel)*.3);
+            double Yacc;
+            Yacc = ((imu.getLinearAcceleration().yAccel)*.3);
 
             double temp;
 
@@ -110,12 +111,12 @@ public class SelfCorrectingMecanumV3 extends LinearOpMode {
 
             if (Math.abs(gamepad1.left_stick_x) == 0 && Math.abs(gamepad1.left_stick_y) == 0 && Math.abs(gamepad1.right_stick_x) ==  0 && Math.abs(gamepad1.right_stick_y) == 0){
 
-                RFpower = ((Yacc + Xacc) / 2);
-                RBpower = ((Yacc - Xacc) / 2);
-                LFpower = ((Yacc - Xacc) / 2);
-                LBpower = ((Yacc + Xacc) / 2);
+                RFpower = -((Yacc + Xacc)/2);
+                RBpower = -((Yacc - Xacc)/2);
+                LFpower = -((Yacc - Xacc)/2);
+                LBpower = -((Yacc + Xacc)/2);
 
-                if (rawDiff > 5.0){
+                /*if (rawDiff > 5.0){
                     LFpower = 0.2;
                     LBpower = 0.2;
                     RFpower = -0.2;
@@ -128,7 +129,7 @@ public class SelfCorrectingMecanumV3 extends LinearOpMode {
                     RFpower = 0.2;
                     RBpower = 0.2;
                 }
-
+                */
 
                 correcting = true;
 
@@ -158,8 +159,10 @@ public class SelfCorrectingMecanumV3 extends LinearOpMode {
 
             telemetry.addLine("");
 
-            telemetry.addData("Xacc: ", Math.round(Xacc));
-            telemetry.addData("Yacc: ", Math.round(Yacc));
+            telemetry.addData("Xacc: ", Xacc);
+            telemetry.addData("Yacc: ", Yacc);
+
+
 
             telemetry.addLine("");
 
