@@ -106,6 +106,8 @@ public class SelfCorrectingMecanumV2 extends LinearOpMode {
                 encoderArrayLF[0] = LFpos;
                 encoderArrayRB[0] = RBpos;
                 encoderArrayRF[0] = RFpos;
+
+
             }
 
             double oldPositionLF = LFpos - encoderArrayLF[0];

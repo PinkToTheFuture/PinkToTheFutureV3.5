@@ -16,7 +16,7 @@ import com.qualcomm.robotcore.util.Range;
 import com.sun.tools.javac.util.Convert;
 
 
-
+@Disabled
 @TeleOp(name="SelfCorrectingMecanumV3", group="PinktotheFuture")
 public class SelfCorrectingMecanumV3 extends LinearOpMode {
     bno055driver imu2;
@@ -51,6 +51,15 @@ public class SelfCorrectingMecanumV3 extends LinearOpMode {
         Double[] imuArray;
         imuArray = new Double[1];
         imuArray[0] = 0.0;
+
+
+        Double[] xAccArray;
+        xAccArray = new Double[1];
+        xAccArray[0] = 0.0;
+
+        Double[] yAccArray;
+        yAccArray = new Double[1];
+        yAccArray[0] = 0.0;
 
 
         waitForStart();
@@ -111,12 +120,27 @@ public class SelfCorrectingMecanumV3 extends LinearOpMode {
 
             if (Math.abs(gamepad1.left_stick_x) == 0 && Math.abs(gamepad1.left_stick_y) == 0 && Math.abs(gamepad1.right_stick_x) ==  0 && Math.abs(gamepad1.right_stick_y) == 0){
 
-                RFpower = -((Yacc + Xacc)/2);
-                RBpower = -((Yacc - Xacc)/2);
-                LFpower = -((Yacc - Xacc)/2);
-                LBpower = -((Yacc + Xacc)/2);
+                if (Xacc>=.5 || Xacc <=.5) {
+                    sleep(50);
+                    Xacc = xAccArray[0];
+                }
+                else{
+                    Xacc=0;
+                }
+                if (Yacc>=.5 || Yacc <= 0.5) {
+                    sleep(50);
+                    Yacc = yAccArray[0];
+                }
+                else {
+                    Yacc=0;
+                }
 
-                /*if (rawDiff > 5.0){
+                RFpower = -((yAccArray[0] + xAccArray[0])/2);
+                RBpower = -((yAccArray[0] - xAccArray[0])/2);
+                LFpower = -((yAccArray[0] - xAccArray[0])/2);
+                LBpower = -((yAccArray[0] + xAccArray[0])/2);
+
+                if (rawDiff > 5.0){
                     LFpower = 0.2;
                     LBpower = 0.2;
                     RFpower = -0.2;
@@ -129,7 +153,7 @@ public class SelfCorrectingMecanumV3 extends LinearOpMode {
                     RFpower = 0.2;
                     RBpower = 0.2;
                 }
-                */
+
 
                 correcting = true;
 
@@ -152,12 +176,15 @@ public class SelfCorrectingMecanumV3 extends LinearOpMode {
 
             //telemetry.addData("imuArray: ", imuArray[0]);
             //telemetry.addData("imu: ", imu2.getAngles()[0]);
-            telemetry.addData("LB",LBpower);
+            /*telemetry.addData("LB",LBpower);
             telemetry.addData("LF",LFpower);
             telemetry.addData("RB",RBpower);
             telemetry.addData("RF",RFpower);
 
-            telemetry.addLine("");
+            telemetry.addLine("");*/
+
+            telemetry.addData("XaccS: ", xAccArray[0]);
+            telemetry.addData("YaccS: ", yAccArray[0]);
 
             telemetry.addData("Xacc: ", Xacc);
             telemetry.addData("Yacc: ", Yacc);
