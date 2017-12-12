@@ -23,6 +23,8 @@ public class OmniFieldCentricDriveV3 extends LinearOpMode {
         double LBpower = 0;
         double RFpower = 0;
         double RBpower = 0;
+
+
         double speed = 1;
 
         //double K1 = 0.5; //increase value not higher than 1
