@@ -42,13 +42,23 @@ public class BalanceSimpleTest extends LinearOpMode {
 
         imu = new bno055driver("IMU", hardwareMap);
 
-        double Pv = 17;     //pitch value
-        double Rv = 10;     //roll value
+        double Pitchv = 17;     //pitch value
+        double Rollv = 10;     //roll value
 
         double LFpower = 0;
         double RFpower = 0;
         double LBpower = 0;
         double RBpower = 0;
+
+        double Kp = 0;
+        double Ki = 0;
+        double Kd = 0;
+
+        double error;
+
+        double Sp;
+        double Pv;
+
 
         telemetry.addLine("ready to start");
         telemetry.update();
@@ -59,10 +69,10 @@ public class BalanceSimpleTest extends LinearOpMode {
         while (opModeIsActive()) {
 
 
-            RFpower = ((((-imu.getAngles()[1])/Pv) + (imu.getAngles()[2]/Rv)) / 2);
-            RBpower = ((((-imu.getAngles()[1])/Pv) - (imu.getAngles()[2]/Rv)) / 2);
-            LFpower = ((((-imu.getAngles()[1])/Pv) - (imu.getAngles()[2]/Rv)) / 2);
-            LBpower = ((((-imu.getAngles()[1])/Pv) + (imu.getAngles()[2]/Rv)) / 2);
+            RFpower = ((((-imu.getAngles()[1])/Pitchv) + (imu.getAngles()[2]/Rollv)) / 2);
+            RBpower = ((((-imu.getAngles()[1])/Pitchv) - (imu.getAngles()[2]/Rollv)) / 2);
+            LFpower = ((((-imu.getAngles()[1])/Pitchv) - (imu.getAngles()[2]/Rollv)) / 2);
+            LBpower = ((((-imu.getAngles()[1])/Pitchv) + (imu.getAngles()[2]/Rollv)) / 2);
 
             //RIGHT STICK
 
@@ -76,12 +86,12 @@ public class BalanceSimpleTest extends LinearOpMode {
             LBdrive.setPower(LBpower);
             RBdrive.setPower(RBpower);
 
-            
             telemetry.addLine("Pitch: " + (imu.getAngles()[1])); //pitch
             telemetry.addLine("Roll: " + (imu.getAngles()[2]));  //roll
             telemetry.update();
 
 
+            sleep(20);
         }
     }
 
