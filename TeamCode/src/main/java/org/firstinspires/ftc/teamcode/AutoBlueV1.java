@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.disnodeteam.dogecv.CameraViewDisplay;
+import com.disnodeteam.dogecv.detectors.CryptoboxDetector;
+import com.disnodeteam.dogecv.detectors.JewelDetector;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -19,17 +22,19 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefau
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 
 
-@Autonomous(name="VuMarkt=Detection", group ="Concept")
+@Autonomous(name="AutoBlueV1", group ="Concept")
 
-public class VuMarkDetection extends LinearOpMode {
+public class AutoBlueV1 extends LinearOpMode {
 
+    private JewelDetector jewelDetector = null;
     public static final String TAG = "Vuforia VuMark Sample";
     OpenGLMatrix lastLocation = null;
     VuforiaLocalizer vuforia;
     AutonomousVoids voids = new AutonomousVoids();
 
 
-    @Override public void runOpMode() {
+
+    public void Vumark() throws InterruptedException {
 
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
@@ -38,43 +43,80 @@ public class VuMarkDetection extends LinearOpMode {
         parameters.vuforiaLicenseKey = "AdQe/E//////AAAAGdUKVJKmNUyWi5sJUoS1G+d+ENxg28Ca11lGwDD6yFPE9hFgVC2x4O0CCFjPJzamT67NyeIzQYo4q0A3z4rJs6h76WVGT8Urwoi2AXXo/awgby8sTLQs8GXzvIg8WuS+7MvCiIKSvEwzv9FBsX8N8trXTsHsdfA7B3LB9C/rScSqDKulPKFTzbdgJvNRGJ8a6S1udF1q6FSZ5UPSFeEYsbQPpC7KBVuFbQAdtxikzobiBfkcHVWkPBJ77dvKkH8bi2tRPpWxqDDo0ZgQH5pTMI7NpKESokFWo8bNFbwvsVv9sK2QPDY8zd2l0Bo+ZOFypY4gdBpFhEiaX9TS/60Ee+LTL/5ExbkahObffUjnCb9X";
 
         parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
-        //ClosableVuforiaLocalizer vuforiacl = new ClosableVuforiaLocalizer(parameters);
         this.vuforia = ClassFactory.createVuforiaLocalizer(parameters);
+        //ClosableVuforiaLocalizer vuforia = new ClosableVuforiaLocalizer(parameters);
+
 
         VuforiaTrackables relicTrackables = this.vuforia.loadTrackablesFromAsset("RelicVuMark");
         VuforiaTrackable relicTemplate = relicTrackables.get(0);
         relicTemplate.setName("relicVuMarkTemplate"); // can help in debugging; otherwise not necessary
 
-        telemetry.addLine("ready to run");
-        telemetry.update();
-        waitForStart();
 
         relicTrackables.activate();
 
-        while (opModeIsActive()) {
+        boolean loop = true;
+
+        while (opModeIsActive()&& loop) {
 
             RelicRecoveryVuMark vuMark = RelicRecoveryVuMark.from(relicTemplate);
             if (vuMark != RelicRecoveryVuMark.UNKNOWN) {
-
                 telemetry.addData("VuMark", "%s visible", vuMark);
-
-                if (vuMark != RelicRecoveryVuMark.CENTER) {
-                    voids.Forward(2, 0.5);
-                    voids.Reverse(1,1);
-                }
-
             }
+
             else {
                 telemetry.addData("VuMark", "not visible");
             }
-
-            //vuforiacl.close();
-
             telemetry.update();
+
         }
+
+
     }
 
-    String format(OpenGLMatrix transformationMatrix) {
-        return (transformationMatrix != null) ? transformationMatrix.formatAsTransform() : "null";
+    public void Jewels() throws InterruptedException {
+
+
+        jewelDetector = new JewelDetector();
+        jewelDetector.init(hardwareMap.appContext, CameraViewDisplay.getInstance());
+
+        //Jewel Detector Settings
+        jewelDetector.areaWeight = 0.02;
+        jewelDetector.downScaleFactor = .9;
+        jewelDetector.detectionMode = JewelDetector.JewelDetectionMode.MAX_AREA; // PERFECT_AREA
+        //jewelDetector.perfectArea = 6500; <- Needed for PERFECT_AREA
+        jewelDetector.debugContours = true;
+        jewelDetector.maxDiffrence = 15;
+        jewelDetector.ratioWeight = 15;
+        jewelDetector.minArea = 700;
+        jewelDetector.rotateMat = true;
+        jewelDetector.enable();
+
+        boolean loop = true;
+        JewelDetector.JewelOrder currentOrder = jewelDetector.getCurrentOrder();
+
+        while (opModeIsActive()&&loop) {
+            /*telemetry.addData("Current Order", "Jewel Order: " + jewelDetector.getCurrentOrder().toString()); // Current Result
+            telemetry.addData("Last Order", "Jewel Order: " + jewelDetector.getLastOrder().toString()); // Last Known Result */
+
+            if (currentOrder != JewelDetector.JewelOrder.BLUE_RED) {
+                telemetry.addLine("jtrue");
+                loop = false;
+            }
+            telemetry.update();
+
+        }
+
     }
+
+    @Override
+    public void runOpMode() throws InterruptedException {
+
+        waitForStart();
+        //Vumark();
+        //sleep(1000);
+        Jewels();
+        sleep(1000);
+
+    }
+
 }

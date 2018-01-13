@@ -4,6 +4,12 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
+import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
+
 
 public class AutonomousVoids extends LinearOpMode  {
     public void Forward(double omw, double pwr) {
@@ -212,7 +218,7 @@ public class AutonomousVoids extends LinearOpMode  {
         RBdrive.setPower(0);
     }
 
-    private void Right_Sideways(double omw, double pwr) throws InterruptedException {
+    public void Right_Sideways(double omw, double pwr) throws InterruptedException {
         boolean loop = true;
         DcMotor LFdrive = hardwareMap.dcMotor.get("LFdrive");
         DcMotor RBdrive = hardwareMap.dcMotor.get("RBdrive");
@@ -285,6 +291,8 @@ public class AutonomousVoids extends LinearOpMode  {
         RFdrive.setPower(0);
         RBdrive.setPower(0);
     }
+
+
 
 
 
